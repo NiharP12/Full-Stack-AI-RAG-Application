@@ -1,123 +1,106 @@
-# Nexus RAG — Enterprise Retrieval-Augmented Generation
+# Nexus RAG — Full-Stack AI RAG Application
 
-A production-ready Full-Stack RAG (Retrieval-Augmented Generation) application featuring an Angular 18+ Material frontend, FastAPI backend, and LangChain AI pipeline.
+A Full-Stack Retrieval-Augmented Generation (RAG) application that lets you upload documents (PDF, DOCX, TXT, CSV) and chat with them using AI. Built with Angular 18, FastAPI, LangChain, FAISS, and Ollama.
 
-## 🌟 Features
+![Nexus RAG Frontend](assets/frontend.png)
 
-- **Multi-Format Ingestion**: Upload PDF, TXT, DOCX, CSV, and XLSX files.
-- **Intelligent Processing**: PyPDF2, pdfplumber, python-docx, and Pandas integration.
-- **Real-Time Streaming**: ChatGPT-style SSE token streaming.
-- **Source Citations**: Accurate transparency showing exact document sources and match scores.
-- **Conversation Memory**: Persistent chat history across sessions.
-- **LLM Agnostic**: Switch seamlessly between OpenAI GPT and local Ollama models.
-- **Modern UI**: Angular Material, Glassmorphism, Dark/Light modes, and Responsive Design.
-- **Production Ready**: Docker Compose, async processing, robust error handling.
+## Tech Stack
 
-## 🏗 Architecture
+### Frontend
+- **Angular 18** — Standalone components
+- **Angular Material** — UI components (icons, buttons, tooltips)
+- **TypeScript**
+- **CSS** — Custom styling with CSS variables, glassmorphism, dark/light theme
 
-```mermaid
-graph TB
-    subgraph Frontend["Frontend (Angular)"]
-        UI[Chat Interface]
-        US[Upload & Sidebar]
-    end
+### Backend
+- **Python 3** with **FastAPI** — REST API with SSE streaming
+- **LangChain** — RAG pipeline orchestration
+- **FAISS** — Vector store for document embeddings
+- **Sentence-Transformers** (`all-MiniLM-L6-v2`) — Embedding model
+- **Ollama** (`tinyllama`) — Local LLM for generating answers
+- **PyPDF2 / pdfplumber** — PDF text extraction
+- **python-docx** — DOCX text extraction
+- **Pandas** — CSV/XLSX processing
+- **Uvicorn** — ASGI server
 
-    subgraph Backend["Backend (FastAPI)"]
-        API[API Endpoints]
-        DS[Document Service]
-        CS[Chat Service]
-        RAG[RAG Pipeline]
-    end
+## Features
 
-    subgraph Storage["Data Layer"]
-        FS[(Local File System)]
-        VS[(FAISS Vector DB)]
-        Hist[(JSON Chat History)]
-    end
+- Upload PDF, TXT, DOCX, CSV files and process them into chunks
+- Semantic search using FAISS vector similarity
+- Real-time streaming chat responses (Server-Sent Events)
+- Source citations with page numbers and match scores
+- Chat history with session management
+- Dark and Light theme toggle
+- New Chat / Delete Chat functionality
+- Stop button to cancel AI response generation
 
-    UI <-->|SSE Streaming / REST| API
-    US -->|Multipart Upload| API
-    API --> DS & CS
-    DS --> RAG
-    CS --> RAG
-    RAG --> VS
-    DS --> FS
-    CS --> Hist
+## Project Structure
+
+```
+RAG APP/
+├── backend/
+│   ├── app/
+│   │   ├── api/routes/       # chat, upload, documents, history, health endpoints
+│   │   ├── core/             # logging, security
+│   │   ├── models/           # Pydantic schemas
+│   │   ├── rag/              # chunker, embeddings, llm_provider, pipeline, prompts, retriever, vectorstore
+│   │   ├── services/         # chat_service, document_service, file_processor
+│   │   └── utils/            # file and text utilities
+│   ├── requirements.txt
+│   └── run.py
+├── frontend/
+│   └── src/app/
+│       ├── components/       # chat, file-upload, header, sidebar, source-card
+│       ├── models/           # TypeScript interfaces
+│       ├── pipes/            # markdown pipe
+│       └── services/         # chat, upload, theme services
+├── .env                      # environment config (not uploaded)
+├── docker-compose.yml
+└── README.md
 ```
 
-## 🚀 Quick Start (Docker)
-
-The easiest way to run the application is using Docker Compose.
-
-1. **Clone the repository**
-2. **Configure Environment**
-   Open `.env` and set `LLM_PROVIDER`:
-   - For Local (free): `LLM_PROVIDER=ollama` (requires running an Ollama instance)
-   - For OpenAI: `LLM_PROVIDER=openai` and `OPENAI_API_KEY=sk-...`
-
-3. **Start the application**
-   ```bash
-   docker-compose up --build
-   ```
-
-4. **Access the application**
-   - Frontend: `http://localhost:4200`
-   - Backend API Docs: `http://localhost:8000/docs`
-
-## 💻 Manual Setup
-
-If you prefer to run it manually without Docker:
+## Setup
 
 ### Prerequisites
 - Node.js v20+
-- Python 3.9+ (3.10 or 3.11 recommended)
+- Python 3.8+
+- Ollama installed and running
 
-### Backend Setup
+### Backend
 ```bash
 cd backend
 python -m venv venv
 
 # Windows
 venv\Scripts\activate
-# Mac/Linux
-source venv/bin/activate
 
 pip install -r requirements.txt
 python run.py
 ```
 
-### Frontend Setup
+### Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-## 📚 Supported Formats
+### Ollama
+```bash
+ollama pull tinyllama
+```
 
-| Format | Processor | Description |
-|--------|-----------|-------------|
-| **PDF** | PyPDF2 / pdfplumber | Extracts text page by page. Fallback to pdfplumber for complex layouts. |
-| **DOCX**| python-docx | Extracts paragraphs and table contents. |
-| **TXT** | standard IO | Multi-encoding support (UTF-8, Latin-1). |
-| **CSV** | Pandas | Converts rows into natural language (e.g., "Col1: Val1, Col2: Val2") for semantic search. |
-| **XLSX**| Pandas / openpyxl | Processes multiple sheets and converts to natural language. |
+### Access
+- Frontend: `http://localhost:4200`
+- Backend API: `http://localhost:8000/docs`
 
-## 🛠 API Documentation
+## API Endpoints
 
-Once the backend is running, visit `http://localhost:8000/docs` for the interactive Swagger UI.
-
-Key endpoints:
-- `POST /api/upload`: Upload multipart files
-- `POST /api/chat`: SSE streaming endpoint for RAG chat
-- `GET /api/documents`: List ingested documents
-- `DELETE /api/documents`: Delete a document and its embeddings
-- `GET /api/history`: Retrieve chat sessions
-
-## 🔧 Future Improvements
-
-- Add ChromaDB/Pinecone support as alternatives to FAISS.
-- Add PostgreSQL/MongoDB for robust chat history (currently uses JSON files).
-- Add Tesseract OCR for scanned PDF support.
-- Implement User Authentication (JWT).
-- Add Hybrid Search (BM25 + Dense Vectors) for better keyword matching.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/upload` | Upload a document |
+| POST | `/api/chat` | Chat with documents (SSE streaming) |
+| GET | `/api/documents` | List uploaded documents |
+| DELETE | `/api/documents` | Delete a document |
+| GET | `/api/history` | Get chat sessions |
+| GET | `/api/health` | Health check |
