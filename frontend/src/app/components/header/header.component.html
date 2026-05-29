@@ -1,0 +1,14 @@
+<div class="header-content">
+  <div class="brand">
+    <mat-icon class="brand-icon">auto_awesome</mat-icon>
+    <span class="brand-text">Nexus RAG</span>
+  </div>
+  
+  <div class="spacer"></div>
+  
+  <div class="actions">
+    <button mat-icon-button (click)="toggleTheme()" aria-label="Toggle theme">
+      <mat-icon>{{ (isDarkTheme$ | async) ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<div class="chat-layout">
+  
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="messages.length === 0">
+    <div class="logo-circle">
+      <mat-icon>auto_awesome</mat-icon>
+    </div>
+    <h2>How can I help you today?</h2>
+    <p>Upload a document in the sidebar to get started.</p>
+  </div>
+
+  <!-- Messages List -->
+  <div class="messages-container" #messagesContainer (scroll)="onScroll()" *ngIf="messages.length > 0">
+    <app-message-bubble 
+      *ngFor="let msg of messages; let isLast = last" 
+      [message]="msg"
+      [isStreaming]="isLast && isStreaming && msg.role === 'assistant'"
+    ></app-message-bubble>
+    
+    <div class="typing-container" *ngIf="isWaitingForResponse">
+      <app-typing-indicator></app-typing-indicator>
+    </div>
+    
+    <div class="bottom-spacer"></div>
+  </div>
+
+  <!-- Input Area -->
+  <div class="input-area">
+    <div class="input-box-wrapper">
+      <textarea 
+        #chatInput
+        class="chat-input" 
+        [(ngModel)]="currentInput" 
+        (keydown)="handleKeyDown($event)"
+        placeholder="Message Nexus RAG..."
+        rows="1"
+        [disabled]="isWaitingForResponse && !isStreaming"
+      ></textarea>
+      
+      <button 
+        *ngIf="!isStreaming"
+        mat-icon-button 
+        class="send-btn" 
+        [class.active]="currentInput.trim().length > 0"
+        (click)="sendMessage()"
+        [disabled]="currentInput.trim().length === 0 || (isWaitingForResponse && !isStreaming)"
+      >
+        <mat-icon>arrow_upward</mat-icon>
+      </button>
+      
+      <button 
+        *ngIf="isStreaming"
+        mat-icon-button 
+        class="send-btn active" 
+        style="background: var(--error-color); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);"
+        (click)="stopStreaming()"
+        title="Stop generation"
+      >
+        <mat-icon>stop</mat-icon>
+      </button>
+    </div>
+    <div class="input-footer">
+      Nexus RAG can make mistakes. Consider verifying important information.
+    </div>
+  </div>
+</div>

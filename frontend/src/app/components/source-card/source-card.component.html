@@ -1,0 +1,19 @@
+<div class="source-card" (click)="toggleExpand()">
+  <div class="source-header">
+    <div class="source-badge">{{ index + 1 }}</div>
+    <div class="source-title" [title]="source.source">{{ source.source }}</div>
+    <div class="source-meta">
+      <span *ngIf="source.page">Page {{ source.page }}</span>
+      <span *ngIf="source.score" class="score-badge" 
+            [class.high]="source.score > 0.8"
+            [class.med]="source.score <= 0.8 && source.score > 0.5">
+        {{ (source.score * 100).toFixed(0) }}% match
+      </span>
+    </div>
+    <mat-icon class="expand-icon">{{ isExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+  </div>
+  
+  <div class="source-content" *ngIf="isExpanded">
+    <div class="content-text">"{{ source.content }}..."</div>
+  </div>
+</div>

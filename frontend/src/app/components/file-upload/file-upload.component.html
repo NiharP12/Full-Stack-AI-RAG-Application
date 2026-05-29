@@ -1,0 +1,49 @@
+<div class="upload-container">
+  
+  <!-- Drag & Drop Zone -->
+  <div 
+    class="drop-zone" 
+    [class.dragging]="isDragging"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()"
+  >
+    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+    <p class="upload-text">Upload Documents</p>
+    <p class="upload-subtext">PDF, TXT, DOCX, CSV</p>
+    <input 
+      #fileInput 
+      type="file" 
+      multiple 
+      [accept]="allowedTypes.join(',')" 
+      style="display: none" 
+      (change)="onFileSelected($event)"
+    >
+  </div>
+
+  <!-- Document List -->
+  <div class="documents-list" *ngIf="documents.length > 0">
+    <div *ngFor="let doc of documents" class="doc-item">
+      <mat-icon class="doc-icon">{{ getFileIcon(doc.filename) }}</mat-icon>
+      
+      <div class="doc-info">
+        <div class="doc-name" [matTooltip]="doc.filename">{{ doc.filename }}</div>
+        <div class="doc-meta">
+          <span class="status-indicator" [class]="doc.status"></span>
+          {{ doc.status | titlecase }} 
+          <span *ngIf="doc.chunk_count">• {{ doc.chunk_count }} chunks</span>
+        </div>
+      </div>
+      
+      <button 
+        mat-icon-button 
+        class="delete-btn" 
+        (click)="deleteDocument(doc.filename)"
+        matTooltip="Delete document"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

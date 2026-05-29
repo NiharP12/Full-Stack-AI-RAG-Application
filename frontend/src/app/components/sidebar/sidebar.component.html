@@ -1,0 +1,42 @@
+<div class="sidebar-content">
+  <!-- New Chat Button -->
+  <div class="new-chat-container">
+    <button mat-stroked-button class="new-chat-btn" (click)="startNewChat()">
+      <mat-icon>add</mat-icon>
+      New Chat
+    </button>
+  </div>
+
+  <!-- Document Upload Section -->
+  <div class="section-title">Knowledge Base</div>
+  <app-file-upload></app-file-upload>
+
+  <!-- Chat History Section -->
+  <div class="section-title history-title">Recent Chats</div>
+  
+  <div class="history-list">
+    <div *ngIf="sessions.length === 0" class="empty-state">
+      <mat-icon>chat_bubble_outline</mat-icon>
+      <p>No recent chats</p>
+    </div>
+
+    <div 
+      *ngFor="let session of sessions" 
+      class="history-item"
+      [class.active]="session.session_id === currentSessionId"
+      (click)="selectSession(session.session_id)"
+    >
+      <mat-icon class="item-icon">chat</mat-icon>
+      <span class="item-title" [matTooltip]="session.title">{{ session.title }}</span>
+      
+      <button 
+        mat-icon-button 
+        class="delete-btn" 
+        (click)="deleteSession($event, session.session_id)"
+        matTooltip="Delete chat"
+      >
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

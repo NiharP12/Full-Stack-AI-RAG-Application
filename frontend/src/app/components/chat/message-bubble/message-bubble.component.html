@@ -1,0 +1,37 @@
+<div class="message-wrapper" [class.user-wrapper]="isUser">
+  
+  <div class="avatar" [class.user-avatar]="isUser" [class.bot-avatar]="!isUser">
+    <mat-icon *ngIf="isUser">person</mat-icon>
+    <mat-icon *ngIf="!isUser">auto_awesome</mat-icon>
+  </div>
+
+  <div class="message-content-area">
+    <!-- User Message (Plain text) -->
+    <div class="message-text user-text" *ngIf="isUser">
+      {{ message.content }}
+    </div>
+    
+    <!-- Bot Message (Markdown) -->
+    <div class="message-text bot-text markdown-body" *ngIf="!isUser">
+      <div [innerHTML]="message.content | markdown"></div>
+      
+      <!-- Streaming Cursor -->
+      <span class="cursor" *ngIf="isStreaming"></span>
+    </div>
+    
+    <!-- Source Citations -->
+    <div class="sources-container" *ngIf="!isUser && message.sources && message.sources.length > 0">
+      <div class="sources-title">
+        <mat-icon>library_books</mat-icon>
+        Sources
+      </div>
+      <div class="sources-list">
+        <app-source-card 
+          *ngFor="let src of message.sources; let i = index" 
+          [source]="src" 
+          [index]="i">
+        </app-source-card>
+      </div>
+    </div>
+  </div>
+</div>
