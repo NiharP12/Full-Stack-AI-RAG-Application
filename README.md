@@ -90,10 +90,6 @@ npm start
 ollama pull tinyllama
 ```
 
-### Access
-- Frontend: `http://localhost:4200`
-- Backend API: `http://localhost:8000/docs`
-
 ## API Endpoints
 
 | Method | Endpoint | Description |
